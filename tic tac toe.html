@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart & Broken Heart Tic-Tac-Toe</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
+            margin-top: 20px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            border: 2px solid black;
+            cursor: pointer;
+            background-color: white;
+            transition: background-color 0.3s;
+        }
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+        .cell.taken {
+            pointer-events: none;
+        }
+        .restart {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #ff4081;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .restart:hover {
+            background-color: #e0005a;
+        }
+        .player-inputs {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        .player-inputs input {
+            padding: 10px;
+            font-size: 1em;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .player-inputs input:focus {
+            border-color: #ff4081;
+        }
+    </style>
+</head>
+<body>
+    <h1>Heart & Broken Heart Tic-Tac-Toe</h1>
+    <div class="player-inputs">
+        <input type="text" id="player1" placeholder="Player 1 (❤️)" value="Player 1">
+        <input type="text" id="player2" placeholder="Player 2 (💔)" value="Player 2">
+    </div>
+    <div class="board" id="board"></div>
+    <h2 id="status">Player ❤️'s Turn</h2>
+    <button class="restart" onclick="restartGame()">Restart Game</button>
+    <script>
+        const board = document.getElementById("board");
+        const status = document.getElementById("status");
+        let currentPlayer = "❤️";
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+
+        function getPlayerName(symbol) {
+            return symbol === "❤️" ? document.getElementById("player1").value : document.getElementById("player2").value;
+        }
+
+        function checkWinner() {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6] // Diagonals
+            ];
+
+            for (const pattern of winPatterns) {
+                const [a, b, c] = pattern;
+                if (gameState[a] && gameState[a] === gameState[b] && gameState[a] === gameState[c]) {
+                    status.innerText = `${getPlayerName(currentPlayer)} Wins!`;
+                    board.childNodes.forEach(cell => cell.classList.add("taken"));
+                    return true;
+                }
+            }
+
+            if (!gameState.includes("")) {
+                status.innerText = "It's a Tie!";
+                return true;
+            }
+            return false;
+        }
+
+        function handleClick(index, cell) {
+            if (gameState[index] !== "") return;
+            gameState[index] = currentPlayer;
+            cell.innerText = currentPlayer;
+            cell.classList.add("taken");
+
+            if (!checkWinner()) {
+                currentPlayer = currentPlayer === "❤️" ? "💔" : "❤️";
+                status.innerText = `${getPlayerName(currentPlayer)}'s Turn`;
+            }
+        }
+
+        function createBoard() {
+            board.innerHTML = "";
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.addEventListener("click", () => handleClick(i, cell));
+                board.appendChild(cell);
+            }
+            currentPlayer = "❤️";
+            status.innerText = `${getPlayerName(currentPlayer)}'s Turn`;
+        }
+
+        function restartGame() {
+            createBoard();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
